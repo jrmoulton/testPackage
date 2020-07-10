@@ -1,4 +1,4 @@
-//Prepare the Bunnies' Escape
+// Prepare the Bunnies' Escape
 
 /* 
 You have maps of parts of the space station, each starting at a prison exit 
@@ -14,57 +14,8 @@ are always passable (0). The map will always be solvable, though you may or
 may not need to remove a wall. The height and width of the map can be from 2 
 to 20. Moves can only be made in cardinal directions; no diagonal moves are allowed.
 */
-
 import Deque
-
-class Maze {
-    let maze: [[Int]]
-    lazy var count = getCount()
-
-    init(_ maze: [[Int]]) {
-        self.maze = maze
-    }
-
-    subscript(index: Int) -> [Int] {
-        return self.maze[index]
-    }
-
-    func getCount() -> Int {
-        return self.maze[0].count
-    }
-}
-
-
-let maze_1 = Maze([
-    [0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 0],
-    [1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0]])  // Answer 21
-
-let maze_6 = Maze([
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])  // Answer 39
-
+import Dispatch
 
 struct SimplePoint {
     let x: Int
@@ -83,26 +34,6 @@ extension SimplePoint: Equatable {
     lhs.y == rhs.y
     }
 }
-
-func getNeighbors(_ x: Int, _ y: Int, _ maze: Maze) -> [SimplePoint] {
-
-    var returnArray: [SimplePoint] = []
-    // Get point to left if active point is not on left edge
-    if x != 0 {
-        returnArray.append(SimplePoint(x-1, y, maze[y][x-1]))
-    }
-    if y != 0 {
-        returnArray.append(SimplePoint(x, y-1, maze[y-1][x]))
-    }
-    if x != maze[0].count - 1 {
-        returnArray.append(SimplePoint(x+1, y, maze[y][x+1]))
-    }
-    if y != maze.count - 1 {
-        returnArray.append(SimplePoint(x, y+1, maze[y+1][x]))
-    }
-    return returnArray
-}
-
 
 struct Point {
     let x: Int
@@ -124,21 +55,38 @@ struct Point {
         self.saldo = saldo
         self.history = history
         self.maze = maze
-        if neighbors.count == 0 && maze[0] != [0] {
-            self.neighbors = getNeighbors(x, y, maze)
-        }
         self.simple = SimplePoint(x, y, val)
+        if neighbors.count == 0 && maze[0] != [0] {
+            self.neighbors = self.getNeighbors(x, y, maze)
+        }
 
+    }
+
+    func getNeighbors(_ x: Int, _ y: Int, _ maze: Maze) -> [SimplePoint] {
+
+        var returnArray: [SimplePoint] = []
+        // Get point to left if active point is not on left edge
+        if x != 0 {
+            returnArray.append(SimplePoint(x-1, y, maze[y][x-1]))
+        }
+        if y != 0 {
+            returnArray.append(SimplePoint(x, y-1, maze[y-1][x]))
+        }
+        if x != maze.count.xcount - 1 {
+            returnArray.append(SimplePoint(x+1, y, maze[y][x+1]))
+        }
+        if y != maze.count.ycount - 1 {
+            returnArray.append(SimplePoint(x, y+1, maze[y+1][x]))
+        }
+        return returnArray
     }
 }
 
-
-
 func constructPointMaze(_ maze: Maze) -> [[Point]] {
     var pointMaze: [[Point]] = []
-    for y in 0..<maze.count {
+    for y in 0..<maze.count.ycount {
         pointMaze.append([])
-        for x in 0..<maze[y].count {
+        for x in 0..<maze.count.xcount {
             pointMaze[y].append(Point(x, y, maze[y][x], maze: maze))
         }
     }
@@ -149,9 +97,24 @@ func getSteps(_ maze: [[Point]]) -> Int? {
     let goal = (maze[0].count-1, maze.count-1) // (maze width, maze height)
     var safety = 0
     let startPoint = maze[0][0]
+    var returnList: [[Int]] = []
 
     var queue: Deque<Point> = [startPoint]
     var activePoint: Point
+
+    func printResult() {
+        print("\n")
+        for y in 0..<maze.count {
+            returnList.append(maze[y].map { $0.val })
+            }
+            for tempPoint in activePoint.history {
+                returnList[tempPoint.y][tempPoint.x] = 2
+            }
+            for list in returnList {
+                print(list)
+            }
+        print("\n")
+    }
 
     while queue.count > 0 {
         safety += 1
@@ -159,7 +122,9 @@ func getSteps(_ maze: [[Point]]) -> Int? {
         activePoint = queue.popFirst()!
         for neighbor in activePoint.neighbors {
             if (neighbor.x, neighbor.y) == goal {
-                return activePoint.history.count + 2
+                activePoint.history += [activePoint.simple, neighbor]
+                printResult()
+                return activePoint.history.count 
             } else if !(activePoint.history.contains(neighbor)) {
                 if neighbor.val == 0 {
                     var temp = maze[neighbor.y][neighbor.x]
@@ -178,9 +143,93 @@ func getSteps(_ maze: [[Point]]) -> Int? {
     return nil
 }
 
+class Maze {
+    let maze: [[Int]]
+    lazy var count = getCount()
 
-if let steps = getSteps(constructPointMaze(maze_6)){
-    print("The final number of steps is \(steps)")
-} else {
-    print("Impossible")
+    init(_ maze: [[Int]]) {
+        self.maze = maze
+    }
+
+    subscript(index: Int) -> [Int] {
+        return self.maze[index]
+    }
+
+    func getCount() -> (xcount: Int, ycount: Int) {
+        return (self.maze[0].count, self.maze.count)
+    }
 }
+
+let maze_2 = [
+    [0, 1, 1, 0],
+    [0, 0, 0, 1],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0]])  // Answer 7
+
+let maze_3 = [
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 0]]) // Answer 7
+
+let maze_4 = [
+    [0, 1, 1, 1],
+    [0, 1, 0, 0],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0]])  // Answer 7
+
+let maze_5 = [
+    [0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0]])  // Answer 11
+
+let maze_6 = [
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])  // Answer 39
+
+let maze_1 = [
+    [0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0]])  // Answer 21
+    
+// I just need some space
+func answer(_ maze: Maze) -> String {
+    let pointMaze = constructPointMaze(maze)
+    if let steps = getSteps(pointMaze){
+        return "The final number of steps is \(steps)"
+    } else {
+        return "Impossible"
+    }
+}
+if 3 => 5 {
+    print("ok")
+}
+let start = DispatchTime.now()
+print(answer(maze_6))
+let end = DispatchTime.now()
+let nanoseconds = Double(end.uptimeNanoseconds - start.uptimeNanoseconds)
+let milliseconds = nanoseconds / 1e6
+print("Finished in \(milliseconds) miliseconds")
