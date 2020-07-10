@@ -1,18 +1,19 @@
 // Prepare the Bunnies' Escape
 
 /* 
-You have maps of parts of the space station, each starting at a prison exit 
-and ending at the door to an escape pod. The map is represented as a matrix 
-of 0s and 1s, where 0s are passable space and 1s are impassable walls. The 
-door out of the prison is at the top left (0,0) and the door into an escape 
-pod is at the bottom right (𝑤−1,ℎ−1). Write a function answer(map) that 
-generates the length of the shortest path from the prison door to the escape 
-pod, where you are allowed to remove one wall as part of your remodeling 
-plans. The path length is the total number of nodes you pass through, 
-counting both the entrance and exit nodes. The starting and ending positions 
-are always passable (0). The map will always be solvable, though you may or 
-may not need to remove a wall. The height and width of the map can be from 2 
-to 20. Moves can only be made in cardinal directions; no diagonal moves are allowed.
+    You have maps of parts of the space station, each starting at a prison exit 
+    and ending at the door to an escape pod. The map is represented as a matrix 
+    of 0s and 1s, where 0s are passable space and 1s are impassable walls. The 
+    door out of the prison is at the top left (0,0) and the door into an escape 
+    pod is at the bottom right (𝑤−1,ℎ−1). Write a function answer(map) that 
+    generates the length of the shortest path from the prison door to the escape 
+    pod, where you are allowed to remove one wall as part of your remodeling 
+    plans. The path length is the total number of nodes you pass through, 
+    counting both the entrance and exit nodes. The starting and ending positions 
+    are always passable (0). The map will always be solvable, though you may or 
+    may not need to remove a wall. The height and width of the map can be from 2 
+    to 20. Moves can only be made in cardinal directions; no diagonal moves are 
+    allowed.
 */
 import Deque
 import Dispatch
@@ -42,12 +43,12 @@ struct Point {
     var saldo: Bool
     var history: [SimplePoint] = []
     var neighbors: [SimplePoint] = []
-    var maze: Maze = Maze([[0]])
+    var maze: [[Int]] = [[0]]
     var simple: SimplePoint
 
     init(_ x: Int, _ y: Int, _ val: Int, _ saldo: Bool = false, 
         history: [SimplePoint] = [], neighbors: [SimplePoint] = [], 
-        maze: Maze = Maze([[0]])) {
+        maze: [[Int]] = [[0]]) { 
 
         self.x = x
         self.y = y
@@ -59,10 +60,9 @@ struct Point {
         if neighbors.count == 0 && maze[0] != [0] {
             self.neighbors = self.getNeighbors(x, y, maze)
         }
-
     }
 
-    func getNeighbors(_ x: Int, _ y: Int, _ maze: Maze) -> [SimplePoint] {
+    func getNeighbors(_ x: Int, _ y: Int, _ maze: [[Int]]) -> [SimplePoint] {
 
         var returnArray: [SimplePoint] = []
         // Get point to left if active point is not on left edge
@@ -72,21 +72,21 @@ struct Point {
         if y != 0 {
             returnArray.append(SimplePoint(x, y-1, maze[y-1][x]))
         }
-        if x != maze.count.xcount - 1 {
+        if x != maze[0].count - 1 {
             returnArray.append(SimplePoint(x+1, y, maze[y][x+1]))
         }
-        if y != maze.count.ycount - 1 {
+        if y != maze.count - 1 {
             returnArray.append(SimplePoint(x, y+1, maze[y+1][x]))
         }
         return returnArray
     }
 }
 
-func constructPointMaze(_ maze: Maze) -> [[Point]] {
+func constructPointMaze(_ maze: [[Int]]) -> [[Point]] {
     var pointMaze: [[Point]] = []
-    for y in 0..<maze.count.ycount {
+    for y in 0..<maze.count {
         pointMaze.append([])
-        for x in 0..<maze.count.xcount {
+        for x in 0..<maze[0].count {
             pointMaze[y].append(Point(x, y, maze[y][x], maze: maze))
         }
     }
@@ -143,39 +143,22 @@ func getSteps(_ maze: [[Point]]) -> Int? {
     return nil
 }
 
-class Maze {
-    let maze: [[Int]]
-    lazy var count = getCount()
-
-    init(_ maze: [[Int]]) {
-        self.maze = maze
-    }
-
-    subscript(index: Int) -> [Int] {
-        return self.maze[index]
-    }
-
-    func getCount() -> (xcount: Int, ycount: Int) {
-        return (self.maze[0].count, self.maze.count)
-    }
-}
-
 let maze_2 = [
     [0, 1, 1, 0],
     [0, 0, 0, 1],
     [1, 1, 0, 0],
-    [1, 1, 1, 0]])  // Answer 7
+    [1, 1, 1, 0]]  // Answer 7
 
 let maze_3 = [
     [0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0],
-    [1, 1, 1, 1, 0]]) // Answer 7
+    [1, 1, 1, 1, 0]] // Answer 7
 
 let maze_4 = [
     [0, 1, 1, 1],
     [0, 1, 0, 0],
     [1, 0, 1, 0],
-    [1, 1, 0, 0]])  // Answer 7
+    [1, 1, 0, 0]]  // Answer 7
 
 let maze_5 = [
     [0, 0, 0, 0, 0, 0],
@@ -183,7 +166,7 @@ let maze_5 = [
     [0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1],
     [0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0]])  // Answer 11
+    [0, 0, 0, 0, 0, 0]]  // Answer 11
 
 let maze_6 = [
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -205,7 +188,7 @@ let maze_6 = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])  // Answer 39
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]  // Answer 39
 
 let maze_1 = [
     [0, 0, 0, 0, 0, 0],
@@ -213,19 +196,16 @@ let maze_1 = [
     [1, 1, 1, 1, 1, 1],
     [0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0]])  // Answer 21
-    
+    [0, 0, 0, 0, 0, 0]]  // Answer 21
+
 // I just need some space
-func answer(_ maze: Maze) -> String {
+func answer(_ maze: [[Int]]) -> String {
     let pointMaze = constructPointMaze(maze)
     if let steps = getSteps(pointMaze){
         return "The final number of steps is \(steps)"
     } else {
         return "Impossible"
     }
-}
-if 3 => 5 {
-    print("ok")
 }
 let start = DispatchTime.now()
 print(answer(maze_6))
