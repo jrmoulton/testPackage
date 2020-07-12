@@ -1,37 +1,7 @@
 // Prepare the Bunnies' Escape
 
-/*
- You have maps of parts of the space station, each starting at a prison exit
- and ending at the door to an escape pod. The map is represented as a matrix
- of 0s and 1s, where 0s are passable space and 1s are impassable walls. The
- door out of the prison is at the top left (0,0) and the door into an escape
- pod is at the bottom right (𝑤−1,ℎ−1). Write a function answer(map) that
- generates the length of the shortest path from the prison door to the escape
- pod, where you are allowed to remove one wall as part of your remodeling
- plans. The path length is the total number of nodes you pass through,
- counting both the entrance and exit nodes. The starting and ending positions
- are always passable (0). The map will always be solvable, though you may or
- may not need to remove a wall. The height and width of the map can be from 2
- to 20. Moves can only be made in cardinal directions; no diagonal moves are
- allowed.
- */
 import Deque
 import Dispatch
-
-protocol Count {
-    func ycount()
-    // func xcount()
-}
-
-extension Count {
-    func ycount() -> Int {
-        return Self.count
-    }
-
-    // func xcount() -> Int {
-    //     return Self[0].count
-    // }
-}
 
 struct SimplePoint {
     let x: Int
@@ -59,18 +29,16 @@ struct Point {
     var history: [SimplePoint] = []
     var neighbors: [SimplePoint] = []
     var maze: [[Int]] = [[0]]
-    var simple: SimplePoint
+    let simple: SimplePoint
 
-    init(_ x: Int, _ y: Int, _ val: Int, _ saldo: Bool = false,
-         history: [SimplePoint] = [], neighbors: [SimplePoint] = [],
+    init(_ x: Int, _ y: Int, _ val: Int, saldo: Bool = false,
+         history _: [SimplePoint] = [], neighbors: [SimplePoint] = [],
          maze: [[Int]] = [[0]]) {
+        simple = SimplePoint(x, y, val)
         self.x = x
         self.y = y
         self.val = val
         self.saldo = saldo
-        self.history = history
-        self.maze = maze
-        simple = SimplePoint(x, y, val)
         if neighbors.isEmpty, maze[0] != [0] {
             self.neighbors = getNeighbors(x, y, maze)
         }
@@ -153,6 +121,15 @@ func getSteps(_ maze: [[Point]]) -> Int? {
     return nil
 }
 
+let maze_1 = [
+    [0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+] // Answer 21
+
 let maze_2 = [
     [0, 1, 1, 0],
     [0, 0, 0, 1],
@@ -205,16 +182,6 @@ let maze_6 = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ] // Answer 39
 
-let maze_1 = [
-    [0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 0],
-    [1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0],
-] // Answer 21
-
-// I just need some space
 func answer(_ maze: [[Int]]) -> String {
     let pointMaze = constructPointMaze(maze)
     if let steps = getSteps(pointMaze) {
