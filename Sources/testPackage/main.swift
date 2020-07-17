@@ -1,7 +1,65 @@
 // Prepare the Bunnies' Escape
 
-import Deque
+// import Deque
 import Dispatch
+
+class Node<Element> {
+    let value: Element
+    var next: Node<Element>?
+    var prev: Node<Element>?
+
+    init(_ value: Element, _ next: Node? = nil, _ prev: Node? = nil) {
+        self.value = value
+        self.next = next
+        self.prev = prev
+    }
+}
+
+struct Queue<Element> {
+    var head: Node<Element>?
+    var tail: Node<Element>?
+    var count: Int
+
+    init(_ inp: Element) {
+        let temp = Node(inp)
+        head = temp
+        tail = temp
+        count = 1
+    }
+
+    var isEmpty: Bool { head == nil }
+
+    mutating func append(_ item: Element) {
+        let node = Node(item)
+        count += 1
+        if isEmpty {
+            head = node
+            tail = node
+        } else {
+            node.prev = tail
+            tail!.next = node
+            tail = node
+        }
+    }
+
+    mutating func pop() -> Element? {
+        if !isEmpty {
+            count -= 1
+            let temp = head
+            if let next = head!.next {
+                head = next
+            } else {
+                head = nil
+            }
+            return temp!.value
+        }
+        return nil
+    }
+}
+
+extension Queue: CustomStringConvertible {
+    var description: String { return "Queue contains: \(count) items." }
+}
 
 struct SimplePoint {
     let x: Int
@@ -74,12 +132,12 @@ func constructPointMaze(_ maze: [[Int]]) -> [[Point]] {
     return pointMaze
 }
 
-func getSteps(_ maze: [[Point]]) -> Int? {
+func getSteps(_ maze: [[Point]], _ optPrint: Bool = false) -> Int? {
     let goal = (maze[0].count - 1, maze.count - 1) // (maze width, maze height)
     let startPoint = maze[0][0]
     var returnList: [[Int]] = []
 
-    var queue: Deque<Point> = [startPoint]
+    var queue = Queue(startPoint)
     var activePoint: Point
 
     func printResult() {
@@ -97,11 +155,13 @@ func getSteps(_ maze: [[Point]]) -> Int? {
     }
 
     while !queue.isEmpty {
-        activePoint = queue.popFirst()!
+        activePoint = queue.pop()!
         for neighbor in activePoint.neighbors {
             if (neighbor.x, neighbor.y) == goal {
                 activePoint.history += [activePoint.simple, neighbor]
-                printResult()
+                if optPrint {
+                    printResult()
+                }
                 return activePoint.history.count
             } else if !activePoint.history.contains(neighbor) {
                 if neighbor.val == 0 {
@@ -130,34 +190,11 @@ let maze_1 = [
     [0, 0, 0, 0, 0, 0],
 ] // Answer 21
 
-let maze_2 = [
-    [0, 1, 1, 0],
-    [0, 0, 0, 1],
-    [1, 1, 0, 0],
-    [1, 1, 1, 0],
-] // Answer 7
-
 let maze_3 = [
     [0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0],
     [1, 1, 1, 1, 0],
 ] // Answer 7
-
-let maze_4 = [
-    [0, 1, 1, 1],
-    [0, 1, 0, 0],
-    [1, 0, 1, 0],
-    [1, 1, 0, 0],
-] // Answer 7
-
-let maze_5 = [
-    [0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1],
-    [0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0],
-] // Answer 11
 
 let maze_6 = [
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
